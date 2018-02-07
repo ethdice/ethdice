@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, minimal-ui">
+    <title>ETHDICE</title>
+    <link rel="stylesheet" type="text/css" href="css/style.min.css?v=20180203">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113350911-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-113350911-1');
+    </script>
+</head>
+
+<body>
+<div class="wrap index">    
+    <div class="header">
+        <div class="top clear">
+            <!-- <a href="mine.html" class="t-head"></a> -->
+            <a href="help.html" class="t-play">how to play?</a>
+        </div>
+        <h1 name="ETHDICE"><img class="title" src="images/title.png" /></h1>
+        <div class="title-box">
+            <h2 class="subtitle">THE BEST ETH DICE GAME IN THE WORLD!</h2>
+            <div class="title-des">The first month without commission！</div>
+        </div>
+        <a href="javascript:void(0)" class="btn btn-create">+CREATE GAME!</a>
+    </div>
+    <ul class="list list-undone clear">
+        
+    </ul>
+    <h2 class="t-h2"><span>—</span> Recent Wins <span>—</span></h2>
+    <ul class="list list-hot clear">
+        
+    </ul>
+    <div class="footer">Copyright © EthDice. All Rights Reserved.</div>
+    
+    <div class="clip">已复制到剪贴板~</div>
+  
+</div>
+
+<div class="pop pop-create">
+    <div class="shadow"></div>
+    <div class="inner">
+        <div class="loading">loading...</div>
+        <i class="icon-close"></i>
+        <label for="number">Players Numbers</label>
+        <div  class="ipt"><i class="icon-minus disabled"></i><input type="number" name="room-num" value="2" /><i class="icon-add"></i></div>
+        <label for="eth">Everyone BET (ETH)</label>
+        <div  class="ipt"><i class="icon-minus"></i><input type="number" name="eth" value="0.1" /><i class="icon-add"></i></div>
+        <input type="button" name="" onClick="" class="pop-btn pop-btn-create" value="CREATE" />
+    </div>
+</div>
+<div class="pop pop-suc">
+    <div class="shadow"></div>
+    <div class="inner">
+        <div class="loading">loading...</div>
+        <i class="icon-close"></i>
+        <div class="pop-t">CREATE SUCCESS!</div>
+        <p class="des">You can share room number to your friends to <br/>invite them here to play together</p>
+        <div class="room-num">Room No.<span>23456656</span></div>
+        <div class="btn-box">
+            <a href="javascript:void(0);" class="pop-btn pop-btn-suc">START</a>
+            <a href="javascript:void(0);" class="pop-btn pop-btn-black pop-btn-share"><i class="icon-share"></i>INVITE FRIENDS</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="js/web3.min.js"></script>
+<script src="js/truffle-contract.js"></script>
+<script src="js/jquery.md5.js"></script>
+<script src="js/pnglib.js"></script>
+<script src="js/identicon.js?v=2"></script>
+<script src="js/app.js?v=5"></script>
+<script src="js/clipboard.min.js"></script>
+<script src="js/script.js?v=20180206"></script>
+
+</body>
+
+</html>

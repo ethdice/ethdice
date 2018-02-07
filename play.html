@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, minimal-ui">
+    <title>ETHDICE</title>
+    <link rel="stylesheet" type="text/css" href="css/style.min.css?v=20180134">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113350911-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-113350911-1');
+    </script>
+
+</head>
+
+<body>
+<div class="wrap play">
+    <!-- <input id="url" type="text" value="" style="height: 0;"> -->
+    <h1 name="ETHDICE"><a href="./"><img class="title" src="images/title.png" /></a></h1>
+    <div class="header user-header">
+        <div class="invite"  data-clipboard-text=""><i class="icon-share"></i>INVITE</div>
+        <div class="game-number">No.</div>
+        <div class="game-money"><span class="eth"></span> ETH / $<span class="usd"></span></div>
+    </div>
+
+    <div class="download-box download-pc">
+        <p class="des">安装Chrome浏览器和XXX插件，就可以立马加入游戏啦！</p>
+        <a href="javascript:void(0)" class="btn btn-download">安装CHROME</a>
+        <a href="javascript:void(0)" class="btn btn-plug">安装插件</a>
+    </div>
+
+    <div class="dice-play"></div>
+
+    <div class="gameover-box">
+        <h2 class="t-win"><span>win <span class="eth"></span> ETH / $<span class="usd"></span> !</span></h2>
+        <div class="game-adva game-win-adva clear">
+            
+        </div>
+    </div>
+    <div class="gameover-no">
+        <h2 class="t-draw">Game Over</h2>
+        <p class="game-des">The bet money has been returned to your account.</p>
+    </div>
+
+    <div class="roll-box">
+        <div class="roll-before">
+            <h2 class="roll-t">请等待其他玩家加入</h2>
+            <div class="roll-des">等玩家全部到齐后，赌局会自动开始，快叫你<br />的朋友一起来玩吧！</div>
+        </div>
+        <a href="javascript:void(0)" class="btn btn-play btn-roll"><i class="icon-roll"></i>ROLL</a>
+        <a href="javascript:void(0)" class="btn btn-play btn-money">GET MY ETH</a>
+        <div class="roll-after">
+            <h2 class="roll-t">Game Over</h2>
+            <div class="roll-des">The money you won has been deposited to your account. Congrats!</div>
+        </div>
+    </div>
+    
+    
+
+    <div class="game-adva game-play-adva clear">
+       
+    </div>
+
+    <div class="download-box download-mobile">
+        <a href="javascript:void(0)" class="btn btn-download">DOWNLOAD</a>
+        <p class="des">你还没有安装XXXAPP哦，安装后就可以<br />立马加入游戏啦！</p>
+    </div>
+
+   
+
+    <div class="footer">Copyright © EthDice. All Rights Reserved.</div>
+    
+    <div class="loading">loading...</div>
+ 
+    <div class="clip">已复制到剪贴板~</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="js/web3.min.js"></script>
+<script src="js/truffle-contract.js"></script>
+<script src="js/jquery.md5.js"></script>
+<script src="js/pnglib.js"></script>
+<script src="js/identicon.js?v=2"></script>
+<script src="js/app.js?v=6"></script>
+<script src="js/clipboard.min.js"></script>
+<script src="js/script.js?v=2018020206"></script>
+</body>
+
+</html>
