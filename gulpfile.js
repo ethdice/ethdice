@@ -16,6 +16,10 @@ var deployPath = deployPath_dev;
 gulp.task("minify-js-index", function() {
     return gulp.src([
             "js/jquery.min.js",
+            "js/jquery.md5.js",
+            "js/clipboard.min.js",
+            "js/pnglib.js",
+            "js/identicon.js",
             "js/web3.min.js",
             "js/truffle-contract.js",
             "js/app.js",
@@ -47,7 +51,8 @@ gulp.task("default", ["minify-index", "watch"]);
 // ------------------------------------------------------------
 gulp.task("watch", function() {
     gulp.watch([
-        "js/zepto.min.js",
+        "js/jquery.min.js",
+        "js/app.js",
         "js/script.js",
         "css/style.css"
     ], ["minify-index"]);

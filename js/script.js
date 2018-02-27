@@ -8,54 +8,60 @@ var M = {
         return null;  
     }
     , undoList: []
+    , curHotListLength: 0 //当前取得房间数的总和
+    , loading: true //是否正在取数据
     , rate: 0
-    , animNum: false
+    , isAnim: true//是否动画 
+    , isRandomOverFirst: false //第一次加载页面时random是否over
+    , scroll: null
+    , animNum: 0 //定时器计数
+    , room: null
     , getRate: function(callback){
         $.get('https://blockchain.ijinshan.com/price/single?from=ETH&to=USD', function(rate){
             callback(rate.data.rate);
         })
     }
     , animDice: function(room){
-        var i = 2
-            , time = 100
-            , num = 100
+        console.log('animDice')
+        var i = 0
             , timer = null
+            , room = M.roomDetail
             ;
-        if(null != timer){
-            return;
-        }
         function startAnim(){
-            clearTimeout(timer);
-            timer = null;
-            if(i == 6){
+            i++;
+            if(i == 7){
                 i = 1;
-                num ++;
-            }else{
-                i ++;
+                M.animNum++;
             }
-            num += time;
-            if(num >= 2000){
-                if(!$('.btn-roll').hasClass('disabled')){
-                    M.animNum = true;
-                }
+            $('.dice-play').css('backgroundImage', 'url(images/'+ i +'.png?v=1)');
+            room = M.roomDetail;
+            if(!M.isAnim && M.isRandomOverFirst){//动画结束 
                 clearTimeout(timer);
                 timer = null;
                 $('.btn-roll').removeClass('disabled').hide();
                 $('.wrap').addClass('result');
+                $('.gameover-box').show()
                 M.renderRoom(room);
-                return false;
-            }else{
-                if(!M.animNum){
-                    timer = setTimeout(startAnim, time);
+            }else{//正在动画
+                console.log('animation')
+                timer = setTimeout(startAnim, 100);
+                if(M.animNum >= 5){
+                    console.log('animNum:' + M.animNum)
+                    M.animNum = 0;
+                    console.log(room)
+                    //waiting random
+                    if(room.diceList.length < room.numAllow){
+                        M.getRoomDetail(room.roomId);
+                    //random is over
+                    }else{
+                        M.isAnim = false;
+                    }
                 }
-
             }
-            $('.dice-play').css('backgroundImage', 'url(images/'+ i +'.png?v=1)');
-            
 
-        }       
+
+        }
         startAnim();
-     
     }
 
     , formateRoomList: function(data){
@@ -85,6 +91,13 @@ var M = {
 
         return room;        
     }
+    , sortList : function(list){
+        list.sort(function(x, y){
+            return y.roomId - x.roomId;
+        })
+        return list;
+
+    }
     , getList: function(num){
         App.getUnfinishedRoomIDs( num, function(r, roomIdList){  //startId 从0开始
             var roomId = 0
@@ -100,8 +113,10 @@ var M = {
                     App.getRoomData(roomId, function(r, d){
                         if(r == 1){
                             list.push(M.formateRoomData(d, roomId));
-                            if(i == roomIdList.length-1){
-                                M.renderUndoList(list);
+                            if(list.length == roomIdList.length){
+
+                                M.renderUndoList(M.sortList(list));
+                                console.log(list)
                             }
                         }
                     })
@@ -110,15 +125,21 @@ var M = {
            
         })
     }
-    , getHotList: function(){
-        App.getHotWinRoomIDs(function(r, roomIdList){
+    , getHotList: function(index, callback){
+        //index 起始id的索引 
+        App.getFinishedRoomIDs(index, function(r, roomIdList){
             var roomId = 0
                 , list = []
                 ;
             if(r == 1){
                 roomIdList = M.formateRoomList(roomIdList);
-                // console.log(roomIdList)
-                 
+                
+                M.curHotListLength += roomIdList.length;
+
+                console.log(roomIdList)
+                
+                callback();
+                
                 $.each(roomIdList, function(i, roomId){
                     //获取房间详细数据
                     App.getRoomData(roomId, function(r, d){
@@ -126,29 +147,56 @@ var M = {
                             // console.log(M.formateRoomData(d, roomId));
 
                             list.push(M.formateRoomData(d, roomId));
-                            if(i == roomIdList.length-1){
-                                M.renderHotList(list);
+                            if(list.length == roomIdList.length){
+                                M.renderHotList(M.sortList(list));
+                                
+                                M.loading = false;
+
                             }
                         }
                     })
                 })
+                
             }
            
         })
+       
+    }
+    , bottomDistance: function() {
+        var pageHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight);
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight || 0;
+        var scrollHeight = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        return pageHeight - viewportHeight - scrollHeight < 20;
+    }
+    , scrollLoad: function(){
+        if (M.bottomDistance()) {
+            if (!M.loading) {
+                M.loading = true;
+                M.getHotList(M.curHotListLength, function(){
+                    // console.log('getHotlist:' + M.curHotListLength)
+                })
+            }
+        }
     }
     , renderUndoList: function(list){
         var html = ''
             , imgList = []
             , imgSrc = ''
+            , strIcon = ''
             ;
         for(var i=0; i<list.length; i++){
             imgList = [];
             for(var j=0; j<list[i]['numAllow']; j++){
                 imgSrc = M.generateAdva(list[i].playerList[j]);
                 if(j <= list[i]['numReal']-1){
-                    imgList.push('<span class="item"><img src="'+ imgSrc +'" /></span>');
+                    if(account == list[i].playerList[j]){
+                        strIcon = '<i class="icon-me">me</i>'
+                    }else{
+                        strIcon = ''
+                    }
+                    imgList.push('<span class="item"><span class="img-wrap"><img src="'+ imgSrc +'" /></span>'+ strIcon +'</span>');
                 }else{
-                    imgList.push('<span class="item"><img src="images/default.png" /></span>');
+                    imgList.push('<span class="item item-def"><span class="img-wrap default"><img src="images/default.png" /></span></span>');
                 }
 
             }
@@ -156,7 +204,7 @@ var M = {
                 '<div class="game-top clear"><span class="game-number">NO. '+ list[i]["roomId"] +'</span><span class="game-count">'+ list[i]["numReal"] +'/'+ list[i]["numAllow"] +'</span></div>'+
                 '<div class="game-adva clear">'+ imgList.join('') + '</div>'+
                 '<div class="game-btm clear">'+
-                    '<span class="game-money"><span class="eth">'+ list[i]["chip"] +'</span> ETH/ $<span class="usd"></span></span>'+
+                    '<span class="game-money"><span class="eth">'+ list[i]["chip"].toFixed(5) +'</span> ETH/ $<span class="usd"></span></span>'+
                     '<a href="play.html?roomid='+ list[i]["roomId"] +'" class="btn btn-join">JOIN</a>'+
                 '</div>'+
             '</li>';
@@ -175,6 +223,7 @@ var M = {
             , numWin = 0
             ;
         for(var i=0; i<list.length; i++){
+            list[i].diceList = list[i].diceList.splice(0, list[i].numAllow)
             maxDice = M.getMaxDice(list[i].diceList);
             imgList = [];
             strTrangleList = [];
@@ -191,21 +240,26 @@ var M = {
                 if(account == list[i]['playerList'][j]){
                     strIcon += '<i class="icon-me">me</i>'
                 }
-                imgList.push('<span class="item"><img src="'+ imgSrc +'" />'+ strIcon +'</span>');
+                imgList.push('<span class="item"><span class="img-wrap"><img src="'+ imgSrc +'" /></span>'+ strIcon +'</span>');
             }
-            winChip = (list[i].chip*list[i].numAllow/numWin - list[i].chip).toFixed(2);
+            winChip = (list[i].chip*list[i].numAllow/numWin - list[i].chip).toFixed(5);
             html += '<li><a href="play.html?roomid='+ list[i].roomId +'">'+
-                '<div class="game-top clear"><span class="game-number">NO. '+ list[i]["roomId"] +'</span><span class="game-count">'+ list[i]["numReal"] +'/'+ list[i]["numAllow"] +'</span></div>'+
+                '<div class="game-top clear"><span class="game-number">NO. '+ list[i]["roomId"] +'</span><span class="game-count">'+ list[i]["numAllow"] +'</span></div>'+
                 '<div class="game-adva clear">'+ imgList.join('') + '</div>'+
                 '<div class="game-btm clear">'+
                     '<span class="game-money">win <span class="eth">'+ winChip +'</span> ETH/ $<span class="usd"></span>'+ strTrangleList.join('') +  '</span>'+
                 '</div>'+
             '</li>';
         }
-        $('.list-hot').html(html);
+        $('.list-hot').append(html);
         M.getRate(function(rate){
             $.each($('.list li'), function(i, ele){
-                $(ele).find('.game-money .usd').html((parseFloat($(ele).find('.game-money .eth').html())*rate).toFixed(2));                
+                var usd = (parseFloat($(ele).find('.game-money .eth').html())*rate).toFixed(5);
+                if(usd == 0.00000){
+                    usd = 0;
+                    $(ele).find('.game-money .eth').html(0);                
+                }
+                $(ele).find('.game-money .usd').html(usd);                
             })
         })
     }
@@ -226,25 +280,31 @@ var M = {
                 console.log(account)
 
                 M.roomDetail = room;
+                // M.room = room;
                 M.renderRoom(room);
             }
         })
     }
     , renderRoom: function(room){
-        
         var strAdvaBtm = []
             , strAdvaWin = [] 
             , strIconDice = '' //win icon dice
             , strIconMe = '' //icon me
             , player = ''
             , dice = 0
-            , maxDice = M.getMaxDice(room.diceList)
+            , maxDice = 0
             , numWin = 0 //the number of people who win
             , imgSrc = ''
             , flagDraw = true//是否为平局
             , flagMe = false//当前用户是否参加过游戏 
             , curUserIndex = -1
             ;
+        if(room.numAllow == room.numReal){
+            room.diceList = room.diceList.splice(0,room.numAllow)
+        }
+        console.log(room.diceList)
+        maxDice = M.getMaxDice(room.diceList);
+
        
         for(var i = 0; i < room.numAllow-1; i++){
             for(var j = 1; j < room.numAllow; j++){
@@ -274,7 +334,8 @@ var M = {
             imgSrc = M.generateAdva(player);
 
             //game over
-            if(room.diceList.length == room.numAllow){
+
+            if(room.numReal == room.numAllow){
                
                 dice = room.diceList[i];
                 strIconDice = '<i class="icon-dice icon-dice'+dice +'"></i>';
@@ -282,27 +343,27 @@ var M = {
                 //the player who win
                 if(dice == maxDice){
                     numWin ++;
-                    strAdvaWin.push('<div class="item"><img src="'+ imgSrc +'" />'+ strIconMe +'<i class="icon-crown"></i>'+ strIconDice +'<a href="https://etherscan.io/address/'+ player +'" class="user">'+ player.substr(0,5) +'...<i class="next"></i></a></div>');
+                    strAdvaWin.push('<div class="item"><span class="img-wrap"><img src="'+ imgSrc +'" /></span>'+ strIconMe +'<i class="icon-crown"></i>'+ strIconDice +'<a href="https://etherscan.io/address/'+ player +'" class="user">'+ player.substr(0,5) +'...<i class="next"></i></a></div>');
                 }
 
             }
 
 
             if(player != '0x0000000000000000000000000000000000000000'){
-                strAdvaBtm.push('<div class="item"><img src="'+ imgSrc +'" />'+ strIconMe + strIconDice +'<a href="https://etherscan.io/address/'+ player +'" class="user">'+ player.substr(0, 5) +'...<i class="next"></i></a></div>');
+                strAdvaBtm.push('<div class="item"><span class="img-wrap"><img src="'+ imgSrc +'" /></span>'+ strIconMe + strIconDice +'<a href="https://etherscan.io/address/'+ player +'" class="user">'+ player.substr(0, 5) +'...<i class="next"></i></a></div>');
             }else{
-                strAdvaBtm.push('<div class="item"><img src="images/default.png" /><a href="javascript:void(0);" class="user">waiting</a></div>');
+                strAdvaBtm.push('<div class="item item-def"><span class="img-wrap default"><img src="images/default.png" /></span><a href="javascript:void(0);" class="user">waiting</a></div>');
             }
         }
 
         $('.header .game-number').html('No. '+room.roomId);
-        $('.header .game-money').find('.eth').html(room.chip);
+        $('.header .game-money').find('.eth').html(room.chip.toFixed(5));
         
         M.getRate(function(rate){
-            $('.header .game-money .usd').html((room.chip*rate).toFixed(2));
-            var maxPrice = (room.chip*room.numAllow/numWin - room.chip).toFixed(2);
+            $('.header .game-money .usd').html((room.chip*rate).toFixed(5));
+            var maxPrice = (room.chip*room.numAllow/numWin - room.chip).toFixed(5);
             $('.gameover-box .t-win span .eth').html(maxPrice);
-            $('.gameover-box .t-win span .usd').html((maxPrice*rate).toFixed(2));
+            $('.gameover-box .t-win span .usd').html((maxPrice*rate).toFixed(5));
         })
 
         if(strAdvaWin.length == 1){
@@ -315,48 +376,92 @@ var M = {
         $('.game-win-adva').html(strAdvaWin.join(''));
         $('.game-play-adva').html(strAdvaBtm.join(''));
 
-        //game not start
+        //game not start, need player join
         if(room.numAllow > room.numReal){
             // $('.btn-roll').hide();
             if(flagMe){
                 $('.btn-roll').hide();
                 $('.roll-before').show()
             }
-        //game start
+        //game start and random is over
         }else{
+        // }else if(room.numAllow == room.diceList.length) {
             $('.btn-roll').hide();
             if(!flagMe){
                 $('body').addClass('result');
                 $('.roll-box').hide();
-            }else{
-                // if($('.btn-roll').hasClass('disabled')){
+            }else{//player = me
 
-                // }
-                M.animDice(room);
                 //show: 当前用户是否参加过游戏且其账户有钱;
-                console.log($('.wrap').hasClass('result'))
                 if(room.playerWinPrice[curUserIndex] > 0 && $('.wrap').hasClass('result')){
-                    console.log('result')
                     $('.btn-money').css('display', 'inline-block');
-                }else if(room.playerWinPrice[curUserIndex] == 0 && $('.wrap').hasClass('result')){
-                    $('.roll-after').hide();
+                }else if(room.playerWinPrice[curUserIndex] == 0 && room.diceList[curUserIndex] == maxDice && $('.wrap').hasClass('result')){
+                    $('.roll-after').show();
                 }
+
+                //if random is over and is first, 执行animDice
+                if(!M.isRandomOverFirst){
+                    M.animDice(room);
+                }
+
+                if(!M.isRandomOverFirst){
+                    setTimeout(function(){
+                        M.isRandomOverFirst = true;
+                    }, 2000)
+                }
+
+                M.isAnim = false;
             }
+
+            
+        // game start but wait random
+        // }else if(room.numAllow == room.numReal && room.numAllow > room.diceList.length){
+        //     console.log("game start but random isn't over");
+        //     M.animDice(room);
+        //     $('.btn-roll').hide();
         }
+
+       
+
+        // var num = web3.eth.getTransactionReceipt(account
+        // //     ,function(res, val){
+        // //     console.log(res,val)
+        // // }
+        // );
+        // console.log('number:'+num);
     }
     
     , bind: function(){
+        $(document).on('scroll', function() {
+            M.scrollLoad();
+        });
 
         $('body').on('click', '.btn-money', function(){
             console.log(M.roomDetail)
+            $('.loading').show();
             App.getMoney( M.roomDetail.roomId, function(r, data){
                 if(r == 1){
                     console.log('money')
+                    $('.loading').hide();
                     $('.btn-money').hide();
                     $('.roll-after').show();
+                }else{
+                    $('.loading span').html('Transition Failed!');
+                    console.log('err')
+                    console.log(data)
                 }
-                console.log(data)
+
+                // console.log(data)
             })
+        })
+
+        $('.loading').click(function(){
+            if($('.wrap').hasClass('index')){
+                $(this).hide();
+                $('.pop-btn-create').removeClass('disabled')
+            }else{
+                $(this).hide();
+            }
         })
 
         $('.btn-roll').click(function(){
@@ -365,7 +470,6 @@ var M = {
                 , room = M.roomDetail
                 , player
                 ;
-            // console.log(room)
             if(room.numAllow > room.numReal){
                 for(var i = 0; i < room.numAllow; i++){
                     player = room.playerList[i];
@@ -377,8 +481,9 @@ var M = {
             }else{
                 flagJoin = false;
             }
-            console.log(flagJoin)
             if(flagJoin) {
+                $('.loading').show();
+                $('.loading span').html('loading...');
                 App.joinRoom( room.roomId, room.chip , function(r, joinData){
                     console.log(joinData)
                     if(r == 1){
@@ -386,7 +491,7 @@ var M = {
                             , playerNum = joinData['logs'][0]['args']['playerNum']['c'][0] //playerNum
                             , imgSrc = M.generateAdva(account)
                             ;
-                        $('.game-play-adva .item').eq(index-1).html('<img src="'+ imgSrc +'" /><i class="icon-me">me</i><a href="https://etherscan.io/address/'+ account +'" class="user">'+ account.substr(0, 5) +'...<i class="next"></i></a>');
+                        $('.game-play-adva .item').eq(index-1).html('<span class="img-wrap"><img src="'+ imgSrc +'" /></span><i class="icon-me">me</i></span><a href="https://etherscan.io/address/'+ account +'" class="user">'+ account.substr(0, 5) +'...<i class="next"></i></a>');
                         if(index == playerNum){
                             $('.roll-box .roll-before').hide();
                             $('.roll-box .btn-roll').show();
@@ -396,16 +501,15 @@ var M = {
 
                         //最后一个加入
                         if(index == room.numAllow){
-                            // location.href = location.href;
-
-                            // console.log(3333)
-                            // console.log(room)
                             M.animDice(room);
                         }else{
                             $('.roll-before').show();
                         }
 
-                        
+                        $('.loading').hide();
+
+                    }else{
+                        $('.loading span').html('Join Failed');
 
                     }
 
@@ -436,13 +540,13 @@ var M = {
             $('.pop-create .pop-btn-create').removeClass('disabled')
             $('.pop-create input[name=room-num]').val(2).siblings('i').removeClass('disabled');
             $('.pop-create .icon-minus').addClass('disabled');
-            $('.pop-create input[name=eth]').val(0.1).siblings('i').removeClass('disabled');
+            $('.pop-create input[name=eth]').val('0.10000').siblings('i').removeClass('disabled');
 
             $('.pop-create').show();
         })
         $('.pop-btn-create').click(function(){
             var playerNum = parseInt($('.pop-create input[name=room-num]').val())
-                , betNum = parseFloat(parseFloat($('.pop-create input[name=eth]').val()).toFixed(2))
+                , betNum = parseFloat(parseFloat($('.pop-create input[name=eth]').val()).toFixed(5))
                 , shareUrl = ''
                 ;
             if($(this).hasClass('disabled')){
@@ -456,13 +560,16 @@ var M = {
             console.log(betNum)
             if(betNum >= 0.01 && betNum <= 10000){
 
-            }else{
+            }else if(betNum < 0.01){
+                return;
+            }else if(betNum > 10000){
                 return;
             }
 
             $(this).addClass('disabled');
             $('.pop-create .loading').show();
-            
+            $('.pop-create .loading span').html('loading...');
+            console.log(betNum);
             App.creatRoom( playerNum, betNum, function(r, data){
                 if(r == 1){
                    
@@ -485,15 +592,15 @@ var M = {
                     }
                     console.log(room)
                     M.undoList.push(room);
-                    M.renderUndoList(M.undoList);
+                    M.renderUndoList(M.sortList(M.undoList));
                     M.getRate(function(rate){
                         $.each($('.list li'), function(i, ele){
-                            $(ele).find('.game-money .usd').html((parseFloat($(ele).find('.game-money .eth').html())*rate).toFixed(2));                
+                            $(ele).find('.game-money .usd').html((parseFloat($(ele).find('.game-money .eth').html())*rate).toFixed(5));                
                         })
                     })
 
                     //share url
-                    shareUrl = location.href+location.pathname.substr(0, location.pathname.lastIndexOf('/'))+'/play.html?roomid='+roomId;
+                    shareUrl = location.origin+location.pathname.substr(0, location.pathname.lastIndexOf('/'))+'/play.html?roomid='+roomId;
                     $('.pop-suc .pop-btn-share').attr('data-clipboard-text', shareUrl);
                     var clipboard = new Clipboard('.pop-suc .pop-btn-share');
                     clipboard.on('success', function(e) {
@@ -504,7 +611,7 @@ var M = {
                         e.clearSelection();
                     });
                 }else{
-                    $('.pop-create .loading').html()
+                    $('.pop-create .loading span').html('Create Failed');
                     console.log('err');
                 }
                 $('.pop-btn-create').removeClass('disabled');
@@ -523,7 +630,7 @@ var M = {
                 min = 0.01;
                 unit = 0.1;
                 var value = parseFloat(ipt.val());
-                num = parseFloat(value.toFixed(2));
+                num = parseFloat(value.toFixed(5));
             }
           
             //减
@@ -545,17 +652,73 @@ var M = {
                     num = max;
                 }
             }
-            console.log('name')
             if(ipt.attr('name') == 'eth'){
                 if(num < min){
                     num = 0.01;
                 }
-                num = num.toFixed(2);
+                num = num.toFixed(5);
             }
             ipt.val(num);
         })   
 
+        $('#btnDownloadApp').click(function(){
+            console.log(333)
+            var GPUrl = 'https://play.google.com/store/apps/details?id=com.blockchain.dapp.browser&referrer=utm_source%3Dins_d_ethdice'
+                , marketUrl = 'market://details?id=com.blockchain.dapp.browser&referrer=utm_source%3Dins_d_ethdice'
+                ;
+            if (typeof cm_web_app != 'undefined' && cm_web_app.hasOwnProperty('go2Google')) {
+                cm_web_app.go2Google(GPUrl);
+            } else if (typeof cm_web_app != 'undefined' && cm_web_app.hasOwnProperty('openMarket')) {
+                cm_web_app.openMarket(GPUrl);
+            } else if (typeof android != 'undefined' && android.hasOwnProperty('openMarket')) {
+                android.openMarket(GPUrl);
+            } else if (typeof ijinshan != 'undefined' && ijinshan.hasOwnProperty('go2Google')) {
+                ijinshan.go2Google(GPUrl);
+            } else {
+                M.androidTryOpenAppOrDownload({
+                    market: marketUrl,
+                    fail: function() {
+                        window.location.href = GPUrl;
+                    }
+                })
+            }
+
+        })
      
+    }
+    , tryOpen: function(url) {
+        if (!url && url !== '') {
+            return;
+        }
+        var frame = window.document.createElement("iframe");
+        frame.style.cssText = "width:1px;height:1px;position:fixed;top:0;left:0;";
+        frame.src = url;
+        window.document.body.appendChild(frame);
+        setTimeout(function() {
+            window.document.body.removeChild(frame);
+        }, 10);
+    }
+
+    , androidTryOpenAppOrDownload: function(obj) {
+        var self = this;
+
+        setTimeout(function() {
+            var startTime = (new Date).valueOf();
+            if (!!obj && !!obj.market) {
+                self.tryOpen(obj.market);
+            }
+
+            startTime = (new Date).valueOf();
+
+            setTimeout(function() {
+                var endTime = (new Date).valueOf();
+                if (550 > endTime - startTime && !!obj && typeof obj.fail == 'function') {
+                    obj.fail();
+                } else {
+                    obj.success();
+                }
+            }, 500);
+        }, 100);
     }
     , generateAdva: function(str){
         var hash = $.md5(str);
@@ -564,20 +727,49 @@ var M = {
         return imgUrl;
     }
     , init:function(){
+        if(!$('.wrap').hasClass('download')){
+            if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
+                // metamask is running.
+                console.log('metamask is running')
+              
+            } else {
+                location.href = 'download.html';
+                console.log('metamask is not existed')
+            }
+        }
+        // 0xfe07fdb24356a28a555ba8fc9ee77b8aa19af45386e06616bf88cb1efb625f84
+        // 0x9fc4236b60a2305e9a834a977153b71c74521ccc3dec8d525d2d64e1f4fb5925
+        // web3.eth.getTransactionReceipt(
+        //     "0x84f330bdf46094dea02e1f60b3d7373544dfaca748b2785921aa193f080dd1df "
+        //     , function(e){
+        //         // console.log(e)
+        //     })
+
+
         if($('.wrap').hasClass('index')){
             M.getList(0);
-            M.getHotList();
+            M.getHotList(0, function(){});
         }else if($('.wrap').hasClass('play')){
             M.getRoomDetail(M.getParameter('roomid'));
+            // if($('.wrap').hasClass('result'))
+            var interval = 30000;
+            setTimeout(function(){
+                // window.location.href = location.href;
+                // setTimeout(arguments.callee,interval);
+            }, interval)
         }
+
         this.bind();
+
+        
+
+        
        
     }
 
 }
-$(function () {
-
-   
-
-    
+$(function () { 
+    if($('.wrap').hasClass('download')){
+        M.init();
+    }
 });

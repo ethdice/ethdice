@@ -31,6 +31,7 @@ a, a:active {
     height: 0;
     font-size: 0;
     clear: both;
+    overflow: hidden;
 }
 img {
     display: block;
@@ -57,6 +58,7 @@ body {
     -webkit-user-select: none; /* 禁止选择 */
     -webkit-touch-callout: none; /* 禁用弹出 */
     background: url(../images/bg.jpg?v=1) repeat left top;
+    background-size: 114px auto;
     color: #FFD892; 
 }
 
@@ -156,23 +158,45 @@ body {
 }
 .game-adva {
     margin: 8px 0 18px -10px;
+    text-align: center;
+}
+.index .game-adva {
+    text-align: left;
 }
 .game-adva .item {
     border-radius: 206px;
     width: 46px;
     height: 46px;
-    float: left;
+    display: inline-block;
     margin-left: 10px;
     box-sizing: border-box;
     position: relative;
+    background-color: #000;
+    font-size: 0;
+}
+.game-adva .item .img-wrap {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 .game-adva .item img {
-    height: 100%;
-    width: auto;
-    margin: 0 auto;
-    position: relative;
+    height: 64%;
+    width: 64%;
+    margin: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     z-index: 1;
-    border-radius: 100%;
+}
+.game-adva .item.item-def img {
+    width: 100%;
+    height: 100%;
+}
+.game-adva .item .default img {
+    width: 100%;
+    height: 100%;
 }
 .game-adva .item:first-child
 , .game-adva .item.down {
@@ -192,11 +216,11 @@ body {
     background: url(../images/down.png) no-repeat;
 }
 .game-adva .item .icon-dice {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     position: absolute;
-    right: -8px;
-    top: -5px;
+    right: -5px;
+    top: -3px;
     background: url(../images/dice1.png) no-repeat;
     background-size: contain;
     z-index: 2;
@@ -240,11 +264,11 @@ body {
     height: 22px;
 }
 .game-adva .item .icon-me {
-    font-size: 20px;
+    font-size: 16px;
     color: #FFD892;
     border: 1px solid #FFD892;
-    width: 52px;
-    line-height: 20px;
+    width: 42px;
+    line-height: 16px;
     text-align: center;
     box-sizing: border-box;
     position: absolute;
@@ -263,7 +287,7 @@ body {
     font-size: 12px;
 }
 .list-hot .game-btm .game-money {
-    color: #FFEDCE;
+    color: #FFD892;
     border-color: #EECA8A;
     padding: 0 20px;
     position: relative;
@@ -311,34 +335,61 @@ body {
 
 .header .invite {
     float: right;
-    font-size: 20px;
+    font-size: 16px;
     padding: 0 40px;
-    line-height: 50px;
+    line-height: 40px;
     color: #FFEDCE;
     border: 1px solid #C4A775;
-    border-radius: 60px 0 0 60px;
-    margin: 8px -2px 0 0;
+    border-radius: 60px;
     background-color: #1F2025;
 }
 .header .invite .icon-share {
-    margin-top: 15px;
+    margin-top: 10px;
+    width: 14px;
+}
+.game-back {
+    font-size: 16px;
+    color: #FFEDCE;
+    line-height: 40px;
+    border-radius: 40px;
+    border: 1px solid #FFEDCE;
+    width: 124px;
+    margin-bottom: 10px;
+}
+.game-back a  {
+    display: block;
+    font-size: 16px;
+    color: #FCECBE;
+    text-align: center;
+}
+.help .game-back {
+    margin: 30px 0;
 }
 .header .game-number {
     color: #C2CAD4;
-    line-height: 36px;
-    font-size: 22px;
+    line-height: 26px;
+    font-size: 16px;
+}
+.icon-back {
+    width: 10px;
+    height: 20px;
+    display: inline-block;
+    position: relative;
+    top: 4px;
+    margin-right: 8px;
+    background: url(../images/back.png) no-repeat center ;
+    background-size: contain;
 }
 .header .game-money {
-    line-height: 36px;
-    font-size: 36px;
-    font-size: 26px;
+    line-height: 26px;
+    font-size: 20px;
 }
 .header .btn-download {
     margin: 0 auto;
 }
 .dice-play {
-    margin: 80px 40px;
-    height: 176px;
+    margin: 50px 40px 40px;
+    height: 106px;
     background: url(../images/1.png?v=1) no-repeat center;
     background-size: contain;
 }
@@ -346,19 +397,19 @@ body {
     margin: 0 auto;
 }
 .game-play-adva.game-adva {
-    margin: 32px auto 40px;
+    margin: 52px auto 40px;
     width: 670px;
     box-sizing: border-box;
 
 }
 .game-play-adva.game-adva .item {
-    width: 90px;
-    height: 90px;
+    width: 72px;
+    height: 72px;
     margin: 26px 22px 46px;
 }
 .game-adva .user {
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     color: #C2CAD4;
     line-height: 22px;
     display: block;
@@ -375,11 +426,11 @@ body {
 .gameover-box
 , .gameover-no {
     text-align: center;
-    padding: 50px 0;
+    padding: 50px 0 30px;
 }
 .gameover-no .t-draw {
     line-height: 52px;
-    font-size: 32px;
+    font-size: 28px;
     color: #FFFFFF;
 }
 .gameover-no .game-des {
@@ -388,13 +439,16 @@ body {
     color: #C2CAD4;
 }
 .gameover-box .t-win {
-    height: 50px;
-    line-height: 50px;
+    height: 44px;
+    line-height: 44px;
     color: #000;
-    font-size: 24px;
+    font-size: 20px;
     position: relative;
     display: inline-block;
     padding: 0 42px;
+}
+.gameover-box .t-win .t-w {
+    padding: 0 20px;
 }
 .gameover-box .t-win span {
     background-color: #FFC04F;
@@ -408,7 +462,7 @@ body {
     top: 0;
     background: url(../images/side.png) no-repeat right; 
     width: 42px;
-    height: 50px;
+    height: 44px;
     background-size: contain;
 }
 .gameover-box .t-win:before {
@@ -419,21 +473,20 @@ body {
     transform: rotate(180deg);
 }
 .gameover-box .game-win-adva {
-    margin: 60px auto 0;
+    margin: 50px auto 0;
 }
 .gameover-box .game-win-adva .item {
-    width: 142px;
-    height: 142px;
+    width: 102px;
+    height: 102px;
     border: 3px solid #ffc250;
     background-color: #000;
 }
 .gameover-box.gameover-multi .game-win-adva {
     width: 444px;
-    margin-bottom: -100px;
+    margin-bottom: -30px;
 }
 .gameover-box.gameover-multi .game-win-adva .item {
-    
-    margin: 0px 40px 100px;
+    margin: 0px 40px 80px;
 }
 .gameover-box.gameover-1 .game-win-adva .item {
     margin: 0 auto;
@@ -480,14 +533,14 @@ body {
     top: -40%;
 }
 .game-win-adva .item .icon-dice {
-    width: 38px;
-    height: 38px;
+    width: 28px;
+    height: 28px;
     z-index: 1;
 }
 .game-win-adva .item .icon-me {
-    line-height: 26px;
-    width: 74px;
-    font-size: 24px;
+    line-height: 18px;
+    width: 52px;
+    font-size: 18px;
     border-width: 2px;
     margin-bottom: -12px;
 }
@@ -518,37 +571,41 @@ body {
     color: #FFD892;
     margin: 0 auto 10px;
 }
+.roll-after {
+    clear: both;
+}
 .roll-after .roll-t {
     margin: 20px auto 2px;
     line-height: 32px;
 }
 .roll-box .roll-des {
-    font-size: 22px;
+    font-size: 16px;
     color: #C2CAD4;
 }
 
 .play .btn-play {
-    width: 260px;
+    width: 156px;
     padding: 0;
     text-align: center;
-    line-height: 60px;
-    font-size: 28px;
+    line-height: 38px;
+    font-size: 16px;
 }
 .play .btn-play i {
     background: url(../images/roll.png) no-repeat center;
-    width: 22px;
-    height: 28px;
+    width: 14px;
+    height: 16px;
     background-size: contain;
     display: inline-block;
     margin: 0 5px 0 0;
     position: relative;
-    top: 3px;
+    top: 2px;
 }
-.download-mobile {
-    display: none;
-}
+
 .download-box {
     text-align: center;
+    display: block;
+}
+.download-mobile {
     display: none;
 }
 .download-box p {
@@ -584,11 +641,9 @@ body {
     margin: -15px auto 0;
     display: none;
     transition: all .5s;
-    z-index: 999;
+    z-index: 9999;
 }
-.btn-money {
-    margin-top: 30px;
-}
+
 .play .gameover-box
 , .play .gameover-no
 , .play .btn-money
@@ -635,18 +690,33 @@ body {
     border: 1px solid #5f6269;
 }
 .loading {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;
-    font-size: 18px;
     text-align: center;
     background-color: rgba(0, 0, 0, .6);
-    padding-top: 40%;
     box-sizing: border-box;
     height: 100%;
     z-index: 9;
     display: none;
+}
+.loading span {
+    font-size: 18px;
+    margin-top: -20px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    right: 0;
+    line-height: 40px;
+    height: 40px;
+}
+.loading.big span {
+    font-size: 28px;
+}
+.scrollload-bottom {
+    display: none;
+
 }
 .icon-close {
     position: absolute;
@@ -678,7 +748,7 @@ body {
     margin: 0 auto;
     background-color: #393A42;
     color: #FFEDCE;
-    font-size: 20px;
+    font-size: 16px;
     height: 100%;
     display: block;
     border: none;
@@ -781,7 +851,6 @@ body {
     font-size: 32px;
     color: #FFFFFF;
     line-height: 80px;
-    margin: 60px 0 0;
 }
 .help h2 {
     font-size: 26px;
@@ -796,7 +865,26 @@ body {
     line-height: 30px;
 }
 
-@media(max-width: 414px){
+@media(max-width: 1039px){
+    .wrap {
+        width: 90%;
+    }
+    .list {
+        width: 100%;
+    }
+    .list li {
+        width: 48%;
+        margin: 0 1% 12px;
+    }
+    .btn-join {
+        height: 34px;
+        line-height: 36px;
+        margin-top: 4px;
+        padding: 0 32px;
+    }
+
+}
+@media(max-width: 870px){
     body {
         background-size: 92px 127px;
         font-size: 13px;
@@ -819,6 +907,9 @@ body {
     .title {
         width: 180px;
         margin: 10px auto 16px;
+    }
+    .play .title {
+        margin-top: 40px;
     }
     .title-box .subtitle {
         font-size: 16px;
@@ -922,6 +1013,7 @@ body {
     .btn-join {
         line-height: 36px;
         padding: 0 36px;
+        margin-top: 0px;
     }
     .t-h2 {
         line-height: 26px;
@@ -931,6 +1023,7 @@ body {
     .header .invite {
         padding: 0 20px;
         line-height: 36px;
+        height: 34px;
         font-size: 14px;
     }
     .header .invite .icon-share {
@@ -938,26 +1031,33 @@ body {
         width: 12px;
         height: 12px;
     }
+    .user-header {
+        padding: 0 20px;
+    }
     .header .game-number {
         line-height: 24px;
-        padding-left: 20px;
-
     }
     .header .game-money {
         line-height: 24px;
         font-size: 18px;
-        padding-left: 20px;
+    }
+    .game-back {
+        width: 104px;
+        line-height: 28px;
+        font-size: 14px;
+    }
+    .icon-back {
+        width: 8px;
     }
 
     .dice-play {
-        height: 167px;
+        height: 126px;
         margin: 34px auto;
-        
     }
 
 
     .game-play-adva.game-adva {
-        width: 320px;
+        width: 100%;
     }
     .game-play-adva.game-adva .item {
         width: 74px;
@@ -991,13 +1091,16 @@ body {
     .gameover-box .t-win {
         height: 43px;
         line-height: 43px;
-        font-size: 22px;
+        font-size: 18px;
         padding: 0 21px;
     }
     .gameover-box .t-win:after, 
     .gameover-box .t-win:before {
         width: 21px;
         height: 43px;
+    }
+    .gameover-box .t-win .t-w {
+        padding: 0 10px;
     }
     .gameover-box .game-win-adva {
         margin-top: 40px;
@@ -1009,7 +1112,7 @@ body {
     .gameover-box.gameover-multi .game-win-adva .item {
         width: 120px;
         height: 120px;
-        margin: 0px 20px 40px;
+        margin: 0px 20px 60px;
     }
 
     .gameover-box.gameover-1 .game-win-adva .item {
@@ -1067,10 +1170,11 @@ body {
     .roll-box .roll-des {
         font-size: 14px;
         line-height: 20px;
+        padding: 20px;
     }
 
     .play .btn-play {
-        font-size: 24px;
+        font-size: 18px;
         line-height: 44px;
     }
     .play .btn-play i {
@@ -1078,7 +1182,13 @@ body {
         width: 22px;
         height: 22px;
         position: relative;
-        top: 2px;
+        top: 5px;
+    }
+    .download-pc {
+        display: none;
+    }
+    .download-mobile {
+        display: block;
     }
     .download-box p {
         margin: 15px 0;
@@ -1142,12 +1252,11 @@ body {
     }
     .help {
         width: 90%;
-        margin: 0 auto;
+        margin: 0 auto 20px;
     }
     .help h1 {
         font-size: 24px;
         line-height: 40px;
-        margin: 40px 0 0 ;
     }
     .help h2 {
         font-size: 18px;
