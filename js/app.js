@@ -294,30 +294,6 @@ App = {
     });
   },
 
-  getHotWinRoomIDs: function( callback ) {
-    var self = this;
-
-    var adoption;
-    App.contracts.Adoption.deployed().then(function(instance) {
-      adoption = instance;
-
-      var events = adoption.allEvents();
-      events.watch(function(error, event){
-        if (!error)
-          console.log(event);
-      });
-
-      return adoption.getHotWinRoomIDs.call();
-    }).then(function(value) {
-      console.log(value);      
-      callback('1',value);      
-      return value;
-    }).catch(function(e) {
-      callback('0',e);      
-      console.log(e);
-    });
-  },
-
   //test
   test: function( callback ) {
     var self = this;
