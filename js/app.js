@@ -31,6 +31,8 @@ App = {
 
       // Set the provider for our contract
       App.contracts.Adoption.setProvider(App.web3Provider);
+      
+      M.init();
 
       // 获取用户账号
       web3.eth.getAccounts(function(error, accounts) {
@@ -49,7 +51,6 @@ App = {
           console.log(err.message);
         });
 
-        M.init();
         return App.bindEvents();
       });
       
