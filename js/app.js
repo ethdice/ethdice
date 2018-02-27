@@ -23,7 +23,7 @@ App = {
 
   initContract: function() {
     // 加载Adoption.json，保存了Adoption的ABI（接口说明）信息及部署后的网络(地址)信息，它在编译合约的时候生成ABI，在部署的时候追加网络信息
-    $.getJSON('build/contracts/PlayDice.json?v=1', function(data) {
+    $.getJSON('build/contracts/PlayDice.json?v=3', function(data) {
     // $.getJSON('PlayDice.json', function(data) {
       // 用Adoption.json数据创建一个可交互的TruffleContract合约实例。
       var AdoptionArtifact = data;
@@ -31,10 +31,9 @@ App = {
 
       // Set the provider for our contract
       App.contracts.Adoption.setProvider(App.web3Provider);
-      
 
       // 获取用户账号
-      web3.eth.getAccounts(function(error, accounts) {
+      var d = web3.eth.getAccounts(function(error, accounts) {
         if (error) {
           console.log(error);
         }
@@ -58,56 +57,13 @@ App = {
 
         return App.bindEvents();
       });
-      
-    });
 
-    $.getJSON('build/contracts/ExampleContract.json', function(data) {
-        // 用Adoption.json数据创建一个可交互的TruffleContract合约实例。
-        var AdoptionArtifact = data;
-        window.App2 = {
-          contracts:{}
-        };
-        App2.contracts.Adoption = TruffleContract(AdoptionArtifact);
-  
-        // Set the provider for our contract
-        App2.contracts.Adoption.setProvider(App.web3Provider);
 
-  
-        // 获取用户账号
-        web3.eth.getAccounts(function(error, accounts) {
-          if (error) {
-            console.log(error);
-          }
-        
-          account = accounts[0];
-          
-          App2.contracts.Adoption.deployed().then(function(instance) {
-            console.log("test222");
-            
-              var adoption = instance;
-        
-              var events = adoption.allEvents();
-              events.watch(function(error, event){
-                if (!error)
-                  console.log(event);
-              });
-        
-              return adoption.getEURGBP.call();    
-            }).then(function(value) {
-            console.log("333");
-            
-              // callback('1',value);
-              console.log(value);
-            }).catch(function(e) {
-              // callback('0',e); 
-              console.log(e);
-            });
-  
-          // M.init();
-          // return App.bindEvents();
-        });
-        
+
+
       });
+      
+
   },
 
   bindEvents: function() {
@@ -120,7 +76,7 @@ App = {
     });
     $("#joinRoom").click(function(){
       App.joinRoom( '2', '0.7', function(r, data){
-        console.log(data)
+        // console.log(data)
       } )
     });
     $("#getMoney").click(function(){
@@ -215,15 +171,19 @@ App = {
         if (!error)
           console.log(event);
       });
-
-      return adoption.getMoney(roomId,{from: account,gas: 3141592});    
+      callback('2', events)
+      var m = adoption.getMoney(roomId,{from: account,gas: 3141592});
+      callback('3', m)
+      return m;    
     }).then(function(value) {
       callback('1',value);
+      console.log(value)
       return value;
     }).catch(function(e) {
       callback('0',e); 
       console.log(e);
     });
+   
   },
   
   //get room data

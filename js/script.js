@@ -22,7 +22,6 @@ var M = {
         })
     }
     , animDice: function(room){
-        console.log('animDice')
         var i = 0
             , timer = null
             , room = M.roomDetail
@@ -43,7 +42,7 @@ var M = {
                 $('.gameover-box').show()
                 M.renderRoom(room);
             }else{//正在动画
-                console.log('animation')
+                // console.log('animation')
                 timer = setTimeout(startAnim, 100);
                 if(M.animNum >= 5){
                     console.log('animNum:' + M.animNum)
@@ -78,16 +77,17 @@ var M = {
         var room = {};
         room.roomId = roomId;//应有人数
         room.numAllow = data[0]['c'][0];//应有人数
-        room.chip = data[1]['c'][0]/10000; //赌注
+        room.chip = parseFloat(web3.fromWei((data[1]).toNumber(), 'ether')); //赌注
         room.numReal = data[2]['c'][0];//实际人数 
         room.diceList = M.formateRoomList(data[3]);//dice的值
         room.playerList = data[4];//player id list
         room.playerWinPrice = [];//player win price
-
+        room.playerPerWin = parseFloat(web3.fromWei((data[6]).toNumber(), 'ether')); // per player win 
 
         for (var i = 0; i < data[5].length; i++) {
-            room.playerWinPrice.push(data[5][i].c[0]/10000)
+            room.playerWinPrice.push(parseFloat(web3.fromWei(data[5][i].toNumber(), 'ether')))
         }
+
 
         return room;        
     }
@@ -302,7 +302,6 @@ var M = {
         if(room.numAllow == room.numReal){
             room.diceList = room.diceList.splice(0,room.numAllow)
         }
-        console.log(room.diceList)
         maxDice = M.getMaxDice(room.diceList);
 
        
@@ -395,6 +394,7 @@ var M = {
                 //show: 当前用户是否参加过游戏且其账户有钱;
                 if(room.playerWinPrice[curUserIndex] > 0 && $('.wrap').hasClass('result')){
                     $('.btn-money').css('display', 'inline-block');
+
                 }else if(room.playerWinPrice[curUserIndex] == 0 && room.diceList[curUserIndex] == maxDice && $('.wrap').hasClass('result')){
                     $('.roll-after').show();
                 }
@@ -420,15 +420,28 @@ var M = {
         //     M.animDice(room);
         //     $('.btn-roll').hide();
         }
+    }
 
-       
+    , setStorage: function(room){
+        //old localstory
+        var str = localStorage.getItem('roomList')
+            , list = []
+            ;
+        if(null == str){
+            list.push(room);
+        }else{
+            list = JSON.parse(str).push(room);
+        }
 
-        // var num = web3.eth.getTransactionReceipt(account
-        // //     ,function(res, val){
-        // //     console.log(res,val)
-        // // }
-        // );
-        // console.log('number:'+num);
+        localStorage.setItem('roomList', JSON.stringify(list))
+
+        var roomList = [{roomId:1, transation:""}]; 
+    }
+
+    , getStorage: function(){
+        var str = localStorage.getItem('roomList');
+        var list = JSON.parse(str);
+        return list==null?[]:list;
     }
     
     , bind: function(){
@@ -440,11 +453,16 @@ var M = {
             console.log(M.roomDetail)
             $('.loading').show();
             App.getMoney( M.roomDetail.roomId, function(r, data){
+                console.log(data);
                 if(r == 1){
                     console.log('money')
                     $('.loading').hide();
                     $('.btn-money').hide();
                     $('.roll-after').show();
+                }else if(r == 2){
+                        // localStorage.mm1 = JSON.parse(data);
+                }else if(r == 3){
+                        // localStorage.mm2 = JSON.parse(data);
                 }else{
                     $('.loading span').html('Transition Failed!');
                     console.log('err')
@@ -552,17 +570,31 @@ var M = {
             if($(this).hasClass('disabled')){
                 return;
             }
+            $('.pop-create .err').html('');
+
+            console.log(playerNum == 'NaN')
+            if(playerNum+"" == 'NaN'){
+                $('.pop-create input[name=room-num]').siblings('.err').html('游戏人数必须为数字')
+                return;
+            }else if(betNum+"" == 'NaN'){
+                $('.pop-create input[name=eth]').siblings('.err').html('赌注必须为数字')
+                return;
+            }
+
             if(playerNum >= 2 && playerNum <= 6){
 
-            }else{
+            }else if(playerNum < 2 || playerNum > 6){
+                $('.pop-create input[name=room-num]').siblings('.err').html('游戏人数的2到6之间')
                 return;
             }
             console.log(betNum)
             if(betNum >= 0.01 && betNum <= 10000){
 
             }else if(betNum < 0.01){
+                $('.pop-create input[name=eth]').siblings('.err').html('赌注最小为0.01')
                 return;
             }else if(betNum > 10000){
+                $('.pop-create input[name=eth]').siblings('.err').html('赌注最大为10000')
                 return;
             }
 
@@ -624,7 +656,24 @@ var M = {
                 , unit = 1
                 , max = 6 
                 , min = 2
+                , errMsg = ''
             ;
+            if($(this).hasClass('disabled')){
+                return;
+            }
+            if(ipt.val() == ''){
+
+                if(ipt.attr('name') == 'eth'){
+                    ipt.val('0.01000');
+                }else{
+                    ipt.val(2);
+                }
+                ipt.siblings('.icon-minus').addClass('disabled')
+                return;
+
+            }
+
+
             if(ipt.attr('name') == 'eth'){
                 max = 10000;
                 min = 0.01;
@@ -641,6 +690,7 @@ var M = {
                 }else if(num <= min) {
                     num = min;
                     $(this).addClass('disabled')
+                    $(this).siblings('.icon-add').removeClass('disabled')
                 }
             //加
             }else {
@@ -648,7 +698,8 @@ var M = {
                 if(num >= min && num < max){
                     $(this).siblings('.icon-minus').removeClass('disabled')
                 }else if(num >= max){
-                    $(this).addClass('disabled')
+                    $(this).addClass('disabled');
+                    $(this).siblings('.icon-minus').removeClass('disabled')
                     num = max;
                 }
             }
@@ -727,6 +778,16 @@ var M = {
         return imgUrl;
     }
     , init:function(){
+        
+        // 0xfe07fdb24356a28a555ba8fc9ee77b8aa19af45386e06616bf88cb1efb625f84
+        // 0x9fc4236b60a2305e9a834a977153b71c74521ccc3dec8d525d2d64e1f4fb5925
+        // web3.eth.getTransactionReceipt(
+        //     "0x84f330bdf46094dea02e1f60b3d7373544dfaca748b2785921aa193f080dd1df "
+        //     , function(e){
+        //         // console.log(e)
+        //     })
+
+
         if(!$('.wrap').hasClass('download')){
             if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
                 // metamask is running.
@@ -743,14 +804,7 @@ var M = {
                 console.log('metamask is not existed')
             }
         }
-        // 0xfe07fdb24356a28a555ba8fc9ee77b8aa19af45386e06616bf88cb1efb625f84
-        // 0x9fc4236b60a2305e9a834a977153b71c74521ccc3dec8d525d2d64e1f4fb5925
-        // web3.eth.getTransactionReceipt(
-        //     "0x84f330bdf46094dea02e1f60b3d7373544dfaca748b2785921aa193f080dd1df "
-        //     , function(e){
-        //         // console.log(e)
-        //     })
-
+      
 
         if($('.wrap').hasClass('index')){
             M.getList(0);
@@ -760,7 +814,7 @@ var M = {
             // if($('.wrap').hasClass('result'))
             var interval = 30000;
             setTimeout(function(){
-                // window.location.href = location.href;
+                window.location.href = location.href;
                 // setTimeout(arguments.callee,interval);
             }, interval)
         }
