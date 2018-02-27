@@ -38,7 +38,12 @@ App = {
         if (error) {
           console.log(error);
         }
-      
+
+        if(undefined == accounts){
+          account = "";
+          M.init();
+        }
+
         account = accounts[0];
         M.init();
         
