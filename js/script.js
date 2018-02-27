@@ -793,14 +793,14 @@ var M = {
                 // metamask is running.
 
                 if(undefined == account || account == ""){
-                    location.href = 'download.html';
+                    // location.href = 'download.html';
                     console.log('metamask is not existed')
                     return;
                 }
                 console.log('metamask is running')
               
             } else {
-                location.href = 'download.html';
+                // location.href = 'download.html';
                 console.log('metamask is not existed')
             }
         }
