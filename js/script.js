@@ -730,6 +730,12 @@ var M = {
         if(!$('.wrap').hasClass('download')){
             if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
                 // metamask is running.
+
+                if(undefined == account || account == ""){
+                    location.href = 'download.html';
+                    console.log('metamask is not existed')
+                    return;
+                }
                 console.log('metamask is running')
               
             } else {

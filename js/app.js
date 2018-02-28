@@ -31,14 +31,21 @@ App = {
 
       // Set the provider for our contract
       App.contracts.Adoption.setProvider(App.web3Provider);
+      
 
       // 获取用户账号
       web3.eth.getAccounts(function(error, accounts) {
         if (error) {
           console.log(error);
         }
-      
+
+        if(undefined == accounts){
+          account = "";
+          M.init();
+        }
+
         account = accounts[0];
+        M.init();
         
         App.contracts.Adoption.deployed().then(function(instance) {
           adoptionInstance = instance;
@@ -49,7 +56,6 @@ App = {
           console.log(err.message);
         });
 
-        M.init();
         return App.bindEvents();
       });
       
