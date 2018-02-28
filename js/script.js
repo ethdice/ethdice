@@ -777,35 +777,22 @@ var M = {
         var imgUrl = 'data:image/png;base64,'+imgData // 这就是头像的base64码
         return imgUrl;
     }
-    , init:function(){
-        
-        // 0xfe07fdb24356a28a555ba8fc9ee77b8aa19af45386e06616bf88cb1efb625f84
-        // 0x9fc4236b60a2305e9a834a977153b71c74521ccc3dec8d525d2d64e1f4fb5925
-        // web3.eth.getTransactionReceipt(
-        //     "0x84f330bdf46094dea02e1f60b3d7373544dfaca748b2785921aa193f080dd1df "
-        //     , function(e){
-        //         // console.log(e)
-        //     })
 
-
+    , checkMetamask: function(){
         if(!$('.wrap').hasClass('download')){
-            if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
+            if (typeof window !== 'undefined' && typeof web3 !== 'undefined') {
                 // metamask is running.
-
-                if(undefined == account || account == ""){
-                    // location.href = 'download.html';
-                    console.log('metamask is not existed')
-                    return;
-                }
                 console.log('metamask is running')
               
             } else {
-                // location.href = 'download.html';
+                location.href = 'download.html';
                 console.log('metamask is not existed')
             }
         }
+    }
+    , init:function(){
+        
       
-
         if($('.wrap').hasClass('index')){
             M.getList(0);
             M.getHotList(0, function(){});

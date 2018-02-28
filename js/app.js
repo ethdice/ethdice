@@ -8,6 +8,7 @@ App = {
   },
 
   initWeb3: function() {
+    M.checkMetamask();
     // Is there an injected web3 instance?
     if (typeof web3 !== 'undefined') {
       App.web3Provider = web3.currentProvider;
