@@ -3,3 +3,5 @@ node_modules
 download.html
 mine.html
 result.html
+build/contracts/ExampleContract.json
+.gitignore

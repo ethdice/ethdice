@@ -5,9 +5,10 @@ var gulp = require("gulp"),
     rename = require("gulp-rename"),
     clean = require("gulp-clean");
 
+var less = require('gulp-less');
+var path = require('path');
 var deployPath_dev = "";
 var deployPath = deployPath_dev;
-
 
 
 
@@ -32,11 +33,14 @@ gulp.task("minify-js-index", function() {
 });
 gulp.task("minify-css-index", function() {
     return gulp.src([
-            "css/style.css"
-        ])
-        .pipe(concat("style.min.css"))
-        .pipe(minifycss())
-        .pipe(gulp.dest(deployPath+'css'));
+        "css/style.less"
+    ])
+    .pipe(less({
+      paths: [ path.join(__dirname, 'less', 'includes') ]
+    }))
+    .pipe(concat("style.min.css"))
+    .pipe(minifycss())
+    .pipe(gulp.dest(deployPath+'css'));
 });
 
 
@@ -54,6 +58,6 @@ gulp.task("watch", function() {
         "js/jquery.min.js",
         "js/app.js",
         "js/script.js",
-        "css/style.css"
+        "css/style.less"
     ], ["minify-index"]);
 });

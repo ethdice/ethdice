@@ -4,19 +4,26 @@ App = {
   contracts: {},
 
   init: function() {
+    M.checkMetamask();
     return App.initWeb3();
   },
 
   initWeb3: function() {
-    M.checkMetamask();
+    // setTimeout(function(){
+    //   M.checkMetamask();
+    // },2000)
+
+    
     // Is there an injected web3 instance?
     if (typeof web3 !== 'undefined') {
       App.web3Provider = web3.currentProvider;
+      
     } else {
       // If no injected web3 instance is detected, fall back to Ganache   
       // App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
       App.web3Provider = new Web3.providers.HttpProvider('http://testethapi.ksmobile.net:8545');
     }
+
     web3 = new Web3(App.web3Provider);
 
     return App.initContract();
@@ -37,8 +44,10 @@ App = {
       // 获取用户账号
       var d = web3.eth.getAccounts(function(error, accounts) {
         if (error) {
-          console.log(error);
+          // console.log(error);
         }
+
+        // alert(accounts);
 
         if(undefined == accounts){
           account = "";
@@ -46,6 +55,8 @@ App = {
         }
 
         account = accounts[0];
+
+        // alert('account'+account)
         M.init();
         
         App.contracts.Adoption.deployed().then(function(instance) {
@@ -54,7 +65,7 @@ App = {
         }).then(function(result) {
           // return App.markAdopted();
         }).catch(function(err) {
-          console.log(err.message);
+          // console.log(err.message);
         });
 
         return App.bindEvents();
@@ -70,68 +81,28 @@ App = {
 
   bindEvents: function() {
 
-    //测试事件 
-    $("#creatRoom").click(function(){
-      App.creatRoom( '2', '0.7', function(r, data){
-        console.log(data)
-      } )
-    });
-    $("#joinRoom").click(function(){
-      App.joinRoom( '2', '0.7', function(r, data){
-        // console.log(data)
-      } )
-    });
-    $("#getMoney").click(function(){
-      App.getMoney( '2', function(r, data){
-        console.log(data)
-      } )
-    });
-    $("#getRoomData").click(function(){
-      App.getRoomData( '1', function(r, data){
-        console.log(data)
-      } )
-    });
-    $("#getUnfinishedRoomIDs").click(function(){
-      App.getUnfinishedRoomIDs( 0, function(r, data){  //startId 从0开始
-        console.log(data)
-      } )
-    });
-    $("#getFinishedRoomIDs").click(function(){
-      App.getFinishedRoomIDs( 0, function(r, data){  //startId 从0开始
-        console.log(data)
-      } )
-    });
-    $("#getHotWinRoomIDs").click(function(){
-      App.getHotWinRoomIDs( function(r, data){
-        console.log(data)
-      } )
-    });
-    $("#test").click(function(){
-      console.log("test");
-      App.test( function(r, data){
-        console.log(data)
-      } )
-    });
-
-    
   
   },
 
   //create room
   creatRoom: function( playNum, playMoney, callback ) {
     var self = this;
-
     var adoption;
     App.contracts.Adoption.deployed().then(function(instance) {
       adoption = instance;
+      // alert('createRoom deployed'+playNum+'money:'+playMoney)
+
+      // alert(adoption)
 
       return adoption.createRoom(playNum, {from: account,value:web3.toWei(playMoney, 'ether')});
     }).then(function(value) {
-      console.log(value);
+      // console.log(value);
       callback( '1' ,value );
     }).catch(function(e) {
+      // alert(e)
+
       callback( '0' ,e );
-      console.log(e);
+      // console.log(e);
     });
 
   },
@@ -145,23 +116,23 @@ App = {
 
       var events = adoption.allEvents();
       events.watch(function(error, event){
-        if (!error)
-          console.log(event);
+        // if (!error)
+          // console.log(event);
       });
 
       return adoption.joinRoom(roomId,{from: account,value:web3.toWei(playMoney, 'ether')});
     }).then(function(value) {
-      console.log(value);
+      // console.log(value);
       callback('1', value); 
       return value;
     }).catch(function(e) {      
       callback('0', e);      
-      console.log(e);
+      // console.log(e);
     });
   }, 
 
   //getMoney
-  getMoney: function( roomId, callback ) {
+  getMoney: function( roomId, index, callback ) {
     var self = this;
 
     var adoption;
@@ -170,20 +141,18 @@ App = {
 
       var events = adoption.allEvents();
       events.watch(function(error, event){
-        if (!error)
-          console.log(event);
+        // if (!error)
+        //   console.log(event);
       });
-      callback('2', events)
-      var m = adoption.getMoney(roomId,{from: account,gas: 3141592});
-      callback('3', m)
-      return m;    
+      return adoption.getMoney(roomId,index,{from: account,gas: 3141592});
+      
     }).then(function(value) {
       callback('1',value);
-      console.log(value)
+      // console.log(value)
       return value;
     }).catch(function(e) {
       callback('0',e); 
-      console.log(e);
+      // console.log(e);
     });
    
   },
@@ -191,50 +160,47 @@ App = {
   //get room data
   getRoomData: function( roomId, callback ) {
     var self = this;
-
     var adoption;
     App.contracts.Adoption.deployed().then(function(instance) {
       adoption = instance;
 
       var events = adoption.allEvents();
       events.watch(function(error, event){
-        if (!error)
-          console.log(event);
+        // if (!error)
+        //   console.log(event);
       });
-            
       return adoption.getRoomData.call( roomId );
             
     }).then(function(value) {
       callback('1',value);
-      console.log(value);
+      // console.log(value);
       return value;      
     }).catch(function(e) {
       callback('0',e);
-      console.log(e);
+      // console.log(e);
     });
   },
   
   getUnfinishedRoomIDs: function( startId, callback ) {
     var self = this;
-
     var adoption;
     App.contracts.Adoption.deployed().then(function(instance) {
       adoption = instance;
 
       var events = adoption.allEvents();
       events.watch(function(error, event){
-        if (!error)
-          console.log(event);
+        // if (!error)
+        //   console.log(event);
       });
 
       return adoption.getUnfinishedRoomIDs.call( startId );
     }).then(function(value) {
-      console.log(value);      
+      // console.log(value);      
       callback('1',value);
       return value;
     }).catch(function(e) {
       callback('0',e);
-      console.log(e);
+      // console.log(e);
     });
   },
 
@@ -247,18 +213,18 @@ App = {
 
       var events = adoption.allEvents();
       events.watch(function(error, event){
-        if (!error)
-          console.log(event);
+        // if (!error)
+          // console.log(event);
       });
 
       return adoption.getFinishedRoomIDs.call( startId );
     }).then(function(value) {
-      console.log(value);      
+      // console.log(value);      
       callback('1',value);
       return value;
     }).catch(function(e) {
       callback('0',e);
-      console.log(e);
+      // console.log(e);
     });
   },
 
@@ -268,31 +234,31 @@ App = {
 
     var adoption;
     App2.contracts.Adoption.deployed().then(function(instance) {
-    console.log("test222");
+    // console.log("test222");
     
       adoption = instance;
 
       var events = adoption.allEvents();
       events.watch(function(error, event){
-        if (!error)
-          console.log(event);
+        // if (!error)
+          // console.log(event);
       });
 
       return adoption.updatePrice({from: account,value:web3.toWei(0.1, 'ether')});;    
     }).then(function(value) {
-      console.log("333");
-      // callback('1',value);
-      console.log(value);
+      // console.log("333");
+      callback('1',value);
+      // console.log(value);
     }).catch(function(e) {
       // callback('0',e); 
-      console.log(e);
+      // console.log(e);
     });
   },
 
 };
 
-$(function() {
-  $(window).load(function() {
-    App.init();
-  });
-});
+// $(function() {
+//   $(window).load(function() {
+//     App.init();
+//   });
+// });

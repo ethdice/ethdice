@@ -19,7 +19,7 @@
 </head>
 
 <body>
-<div class="wrap play">
+<div class="wrap play ">
     <div class="header user-header">
         <div class="invite"  data-clipboard-text=""><i class="icon-share"></i>SHARE</div>
         <div class="game-back"><a href="./"><i class="icon-back"></i>ETHDICE</a></div>
@@ -27,31 +27,74 @@
         <div class="game-money"><span class="eth"></span> ETH / $<span class="usd"></span></div>
     </div>
 
-  
 
     <div class="dice-play"></div>
+    
+    <div class="play-box box">
+        <div class="roll-box">
 
-    <div class="gameover-box">
-        <h2 class="t-win"><span class="t-w">win <span class="eth"></span> ETH / $<span class="usd"></span> !</span></h2>
-        <div class="game-adva game-win-adva clear">
+            <div class="roll-before roll-wait">
+                    <!-- <div class="roll-des">Please wait for a few minutes to wait for the success of the transaction</div> -->
+                    <div class="roll-des">如果你已经付款成功，请等待，不要重复付款；<br>如果付款不成功，请重试；</div>
+                    <a href="javascript:void(0)" class="btn btn-play btn-roll"><i class="icon-roll"></i>ROLL</a>
+                </div>
+            <div class="roll-before roll-aft">
+                <h2 class="roll-t">Invite other players to join</h2>
+                <div class="roll-des">The game will start when all players are in. <br />Invite your friends to play together now!</div>
+            </div>
+            <div class="roll-btn">
+                <a href="javascript:void(0)" class="btn btn-play btn-roll"><i class="icon-roll"></i>ROLL</a>
+            </div>
             
         </div>
     </div>
-    <div class="gameover-no">
-        <h2 class="t-draw">Game Draw</h2>
+
+    <div class="draw-box box">
+        <div class="gameover-no">
+            <h2 class="t-draw">Game Draw</h2>
+        </div>
+        <div class="roll-box">
+            <div class="roll-wait">
+                <!-- <div class="roll-des">Please wait for a few minutes to wait for the success of the transaction</div> -->
+                <div class="roll-des">如果你已经支付过Gas费，请等待款项打入账户中；<br>如果支付不成功，请重试；</div>
+                <a href="javascript:void(0)" class="btn btn-play btn-money">GET MY ETH (Pay Gas)</a>
+                
+            </div>
+            <div class="roll-btn">
+                <a href="javascript:void(0)" class="btn btn-play btn-money">GET MY ETH (Pay Gas)</a>
+            </div>
+            <div class="roll-after roll-aft">
+                <div class="roll-des">The bet money has been returned to your account. </div>
+            </div>
+        </div>
     </div>
 
-    <div class="roll-box">
-        <div class="roll-before">
-            <h2 class="roll-t">Invite other players to join</h2>
-            <div class="roll-des">The game will start when all players are in. <br />Invite your friends to play together now!</div>
+    <div class="win-box box">
+        <div class="gameover-box">
+            <h2 class="t-win"><span class="t-w">win <span class="eth"></span> ETH / $<span class="usd"></span> !</span></h2>
+            <div class="game-adva game-win-adva clear">
+                
+            </div>
         </div>
-        <a href="javascript:void(0)" class="btn btn-play btn-roll"><i class="icon-roll"></i>ROLL</a>
-        <a href="javascript:void(0)" class="btn btn-play btn-money">GET MY ETH</a>
-        <div class="roll-after">
-            <div class="roll-des">The money has been returned to your account.</div>
+
+        <div class="roll-box">
+            <div class="roll-wait">
+                <!-- <div class="roll-des">Please wait for a few minutes to wait for the success of the transaction</div> -->
+                <div class="roll-des">如果你已经支付过Gas费，请等待款项打入账户中；<br>如果支付不成功，请重试；</div>
+                <a href="javascript:void(0)" class="btn btn-play btn-money">GET MY ETH (Pay Gas)</a>
+            </div>
+            <div class="roll-btn">
+                <a href="javascript:void(0)" class="btn btn-play btn-money">GET MY ETH (Pay Gas)</a>
+            </div>
+            <div class="roll-after roll-aft">
+                <div class="roll-des">The money you won has been deposited to your account. Congrats!</div>
+            </div>
         </div>
     </div>
+    
+    
+
+
     
     
 
@@ -68,15 +111,20 @@
 
 <div class="loading big"><span>loading...</span></div>
 
+<div class="pop pop-msg"">
+    <div class="shadow"></div>
+    <div class="content">Please recharge your wallet!</div>
+</div>
+
 <script src="js/jquery.min.js?v=1"></script>
 <script src="js/web3.min.js"></script>
 <script src="js/truffle-contract.js"></script>
 <script src="js/jquery.md5.js"></script>
 <script src="js/pnglib.js"></script>
 <script src="js/identicon.js?v=2"></script>
-<script src="js/app.js?v=11"></script>
+<script src="js/app.js?v=20180532"></script>
 <script src="js/clipboard.min.js"></script>
-<script src="js/script.js?v=20180228"></script>
+<script src="js/script.js?v=20180532"></script>
 <!-- <script src="js/script.min.js?v=20180203"></script> -->
 </body>
 
