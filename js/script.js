@@ -1,11 +1,12 @@
 var M = {
     roomDetail: {}
-    , msg1: 'The game will start when all players are in. Invite your friends to play together now!'
-    , msg2: 'ETH will be returned to the account of each player'
+    , msg1: 'Players should be more than 2 people and less than 6 (both inclusive)'
+    , msg2: 'The minimum average bet value of each player is 0.01 ETH'
+    , msg3: 'The maximum average bet value of each player is 10,000 ETH'
     , loadingMsg: '<div class="load-inner"><div class="big">loading...</div></div>'
-    , msgCreateFailed: '<div class="load-inner"><div class="big">Create Failed!</div><div class="small">支付失败的原因可能是支付时填写的Gas Price不够，需要大于0</div></div>'
-    , msgJoinFailed: '<div class="load-inner"><div class="big">Join Failed!</div><div class="small">支付失败的原因可能是支付时填写的Gas Price不够，需要大于0</div></div>'
-    , msgGetMoneyFailed: '<div class="load-inner"><div class="big">Transition Failed!</div><div class="small">支付失败的原因可能是支付时填写的Gas Price不够，需要大于0</div></div>'
+    , msgCreateFailed: '<div class="load-inner"><div class="big">Create Failed!</div><div class="small">The failure of payment might be caused by incorrect gas price value filled. Please make sure that it is greater than 0.</div></div>'
+    , msgJoinFailed: '<div class="load-inner"><div class="big">Join Failed!</div><div class="small">The failure of payment might be caused by incorrect gas price value filled. Please make sure that it is greater than 0.</div></div>'
+    , msgGetMoneyFailed: '<div class="load-inner"><div class="big">Transition Failed!</div><div class="small">The failure of payment might be caused by incorrect gas price value filled. Please make sure that it is greater than 0.</div></div>'
     , undoList: []
     , curHotListLength: 0 //当前取得房间数的总和
     , loading: true //是否正在取数据
@@ -675,7 +676,10 @@ var M = {
 
         }
         $('.shadow, .icon-close').click(function(){
-            $(this).parents('.pop').hide().find('.err').html('');
+            $(this).parents('.pop').hide();
+
+            $('.pop').removeClass('has-error').find('.err').html('');
+            
 
         })
         $('.btn-create').click(function(){
@@ -795,39 +799,57 @@ var M = {
         $('.pop-msg').show();
     }
     , isCreateRoom: function(btn, playerNum, betNum){
-        $('.pop-create .err').html('');
+        var isCreate = true
+            , roomErr = $('.pop-create input[name=room-num]').parents('.ipt-box').find('.err')
+            , ethErr = $('.pop-create input[name=eth]').parents('.ipt-box').find('.err')
+            ;
+        $('.pop-create').removeClass('has-error').find('.err').html('');
 
         if(btn.hasClass('disabled')){
-            return;
+            isCreate = false;
+            // return;
         }
 
         if(playerNum+"" == 'NaN'){
-            $('.pop-create input[name=room-num]').siblings('.err').html('游戏人数必须为数字')
-            return;
+            // 游戏人数为数字
+            roomErr.html(M.msg1)
+            isCreate = false;
+            // return;
         }else if(betNum+"" == 'NaN'){
-            $('.pop-create input[name=eth]').siblings('.err').html('赌注必须为数字')
-            return;
+            // 赌注必须为数字
+            ethErr.html(M.msg2)
+            isCreate = false;
+            // return;
         }
 
         if(playerNum >= 2 && playerNum <= 6){
 
         }else if(playerNum < 2 || playerNum > 6){
-            $('.pop-create input[name=room-num]').siblings('.err').html('游戏人数的2到6之间')
-            return;
+            // 人数需要在2~6之间 
+            roomErr.html(M.msg1)
+            isCreate = false;
+            // return;
         }
 
         if(betNum >= 0.01 && betNum <= 10000){
 
         }else if(betNum < 0.01){
-            $('.pop-create input[name=eth]').siblings('.err').html('赌注最小为0.01')
-            return;
+            // 赌注最小为0.01
+            ethErr.html(M.msg2)
+            isCreate = false;
+            // return;
         }else if(betNum > 10000){
-            $('.pop-create input[name=eth]').siblings('.err').html('赌注最大为10000')
-            return;
+            // 赌注最大为10000
+            ethErr.html(M.msg3)
+            isCreate = false;
+            // return;
         }
 
+        if(!isCreate){
+            $('.pop-create').addClass('has-error');
+        }
         
-        return true;
+        return isCreate;
     }
 
     , createRoom: function(btnCreate){

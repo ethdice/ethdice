@@ -5,7 +5,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, minimal-ui">
     <title>ETHDICE</title>
-    <link rel="stylesheet" type="text/css" href="css/style.min.css?v=20180213">
+    <link rel="stylesheet" type="text/css" href="css/style.min.css?v=20180604">
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-113350911-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -55,9 +55,15 @@
         <div class="loading"><span>loading...</span></div>
         <i class="icon-close"></i>
         <label for="number">Player Amount</label>
-        <div  class="ipt"><i class="icon-minus disabled"></i><input type="number" name="room-num" value="2" /><i class="icon-add"></i><span class="err"></span></div>
+        <div class="ipt-box">
+            <div  class="ipt"><i class="icon-minus disabled"></i><input type="number" name="room-num" value="2" /><i class="icon-add"></i></div>
+            <span class="err"></span>
+        </div>
         <label for="eth">Bet Amount(ETH)</label>
-        <div  class="ipt"><i class="icon-minus"></i><input type="text" name="eth" maxlength="7" value="0.10000" /><i class="icon-add"></i><span class="err"></span></div>
+        <div class="ipt-box">
+            <div  class="ipt"><i class="icon-minus"></i><input type="text" name="eth" maxlength="7" value="0.10000" /><i class="icon-add"></i></div>
+            <span class="err"></span>
+        </div>
         <input type="button" name="" onClick="" class="pop-btn pop-btn-create" value="CREATE A GAME!" />
     </div>
 </div>
@@ -82,9 +88,9 @@
 <script src="js/jquery.md5.js"></script>
 <script src="js/pnglib.js"></script>
 <script src="js/identicon.js?v=2"></script>
-<script src="js/app.js?v=2018053112"></script>
+<script src="js/app.js?v=20180604"></script>
 <script src="js/clipboard.min.js"></script>
-<script src="js/script.js?v=2018053112"></script>
+<script src="js/script.js?v=20180604"></script>
 <!-- <script src="js/script.min.js?v=20180200"></script> -->
 </body>
 
